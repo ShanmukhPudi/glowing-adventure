@@ -31,3 +31,9 @@ Thumbs.db
 # 5. Logs
 # =========================
 npm-debug.log*
+
+# =========================
+# 6. Storage Controller
+# =========================
+uploads/*
+!uploads/.gitkeep

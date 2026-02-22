@@ -74,7 +74,10 @@ const Hotels = () => {
       form.append("description", formData.description);
       form.append("pricePerNight", formData.pricePerNight);
       form.append("availableRooms", formData.availableRooms);
-      Array.from(images).forEach((img) => form.append("images", img));
+      // Array.from(images).forEach((img) => form.append("images", img));
+      if (images && images.length > 0) {
+        Array.from(images).forEach((img) => form.append("images", img));
+      }
 
       if (editingHotel) {
         const { data } = await API.put(`/hotels/${editingHotel._id}`, form);
@@ -123,7 +126,7 @@ const Hotels = () => {
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
               </div>
               <div className="form-group">
-                <label>Price Per Night ($)</label>
+                <label>Price Per Night (₹)</label>
                 <input className="form-input" type="number" placeholder="299" value={formData.pricePerNight}
                   onChange={(e) => setFormData({ ...formData, pricePerNight: e.target.value })} required />
               </div>
@@ -140,7 +143,7 @@ const Hotels = () => {
               </div>
               <div className="form-group form-full">
                 <label>Images</label>
-                <input className="form-input" type="file" multiple accept="image/*"
+                <input className="form-input" type="file" name="images" multiple accept="image/*"
                   onChange={(e) => setImages(e.target.files)} />
               </div>
             </div>
