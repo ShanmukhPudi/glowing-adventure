@@ -34,69 +34,56 @@ const Bookings = () => {
             </p>
         );
     return (
-        <div style={styles.container}>
-            <h2 style={{ marginBottom: "1.5rem"}}>
-                All Bookings
-            </h2>
+  <div>
+    <div className="page-header">
+      <h1>All Bookings</h1>
+    </div>
 
-            {bookings.length === 0 ?(
-                <p style={styles.center}>
-                    No bookings yet.
-                </p>
-            ) : (
-               <table style={styles.table}>
-          <thead>
-            <tr style={styles.tableHeader}>
-              <th style={styles.th}>User</th>
-              <th style={styles.th}>Email</th>
-              <th style={styles.th}>Hotel</th>
-              <th style={styles.th}>Location</th>
-              <th style={styles.th}>
-                Rooms Booked
-              </th>
-              <th style={styles.th}>
-                Booking Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((booking) => (
-                <tr
-                key={booking._id}
-                style={styles.tableRow}
-              >
-                <td style={styles.td}>
-                  {booking.user?.name || "N/A"}
-                </td>
-                <td style={styles.td}>
-                  {booking.user?.email || "N/A"}
-                </td>
-                <td style={styles.td}>
-                  {booking.hotel?.name || "N/A"}
-                </td>
-                <td style={styles.td}>
-                  {booking.hotel?.location ||
-                    "N/A"}
-                </td>
-                <td style={styles.td}>
-                  {booking.roomsBooked}
-                </td>
-                <td style={styles.td}>
-                  {new Date(
-                    booking.createdAt,
-                  ).toLocaleDateString("en-IN", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </td>
+    <div className="page-body">
+      {loading ? (
+        <p className="state-center">Loading bookings...</p>
+      ) : error ? (
+        <p className="state-center error-text">{error}</p>
+      ) : bookings.length === 0 ? (
+        <p className="state-center">No bookings yet.</p>
+      ) : (
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Hotel</th>
+                <th>Location</th>
+                <th>Rooms Booked</th>
+                <th>Booking Date</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
+            <tbody>
+              {bookings.map((booking) => (
+                <tr key={booking._id}>
+                  <td>{booking.user?.name || "N/A"}</td>
+                  <td>{booking.user?.email || "N/A"}</td>
+                  <td>{booking.hotel?.name || "N/A"}</td>
+                  <td>{booking.hotel?.location || "N/A"}</td>
+                  <td>
+                    <span className="badge badge-green">{booking.roomsBooked}</span>
+                  </td>
+                  <td>
+                    {new Date(booking.createdAt).toLocaleDateString("en-IN", {
+                      year: "numeric", month: "short", day: "numeric",
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
-            )}
         </div>
-    );
+      )}
+    </div>
+  </div>
+);
+
 };
 
 const styles = {

@@ -37,35 +37,37 @@ const Login = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={styles.title}> Atlantis Admin </h2>
-                <p style={styles.subtitle}>Sign in to manage hotels and bookings</p>
-                {error && <p style={styles.error}>{error}</p>}
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <input
-                        type="email"
-                        placeholder="Admin Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                    <button type="submit" style={styles.button} disabled={loading}>
-                        {loading ? "Signing in..." : "Sign In"}
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
+  <div className="login-page">
+    <div className="login-card">
+      <h2>ATLANTIS</h2>
+      <p>Sign in to manage hotels and bookings</p>
+
+      {error && <p className="error-text">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="login-form">
+        <input
+          type="email"
+          placeholder="Admin Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="form-input"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="form-input"
+          required
+        />
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+    </div>
+  </div>
+);
 };
 
 const styles = {

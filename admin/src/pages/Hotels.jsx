@@ -96,111 +96,110 @@ const Hotels = () => {
 //   if (error) return <p style={{ ...styles.center, color: "red" }}>{error}</p>;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h2>Hotels</h2>
-        <button onClick={() => setShowForm(!showForm)} style={styles.addButton}>
-          {showForm ? "Cancel" : "+ Add Hotel"}
-        </button>
-      </div>
+  <div>
+    <div className="page-header">
+      <h1>Hotels</h1>
+      <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+        {showForm ? "Cancel" : "+ Add Hotel"}
+      </button>
+    </div>
 
-      {/* Add / Edit Form */}
+    <div className="page-body">
       {showForm && (
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <h3>{editingHotel ? "Edit Hotel" : "Add New Hotel"}</h3>
-          <div style={styles.grid}>
-            <input
-              placeholder="Hotel Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <input
-              placeholder="Location"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Price Per Night"
-              value={formData.pricePerNight}
-              onChange={(e) => setFormData({ ...formData, pricePerNight: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Available Rooms"
-              value={formData.availableRooms}
-              onChange={(e) => setFormData({ ...formData, availableRooms: e.target.value })}
-              style={styles.input}
-              required
-            />
-          </div>
-          <textarea
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            style={styles.textarea}
-            required
-          />
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={(e) => setImages(e.target.files)}
-            style={styles.input}
-          />
-          <div style={styles.formButtons}>
-            <button type="submit" style={styles.saveButton} disabled={submitting}>
-              {submitting ? "Saving..." : editingHotel ? "Update Hotel" : "Add Hotel"}
-            </button>
-            <button type="button" onClick={resetForm} style={styles.cancelButton}>
-              Cancel
-            </button>
-          </div>
-        </form>
+        <div className="card">
+          <h3 style={{ marginBottom: "1.2rem", color: "white" }}>
+            {editingHotel ? "Edit Hotel" : "Add New Hotel"}
+          </h3>
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Hotel Name</label>
+                <input className="form-input" placeholder="The Grand Atlantis" value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label>Location</label>
+                <input className="form-input" placeholder="Maldives" value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label>Price Per Night ($)</label>
+                <input className="form-input" type="number" placeholder="299" value={formData.pricePerNight}
+                  onChange={(e) => setFormData({ ...formData, pricePerNight: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label>Available Rooms</label>
+                <input className="form-input" type="number" placeholder="10" value={formData.availableRooms}
+                  onChange={(e) => setFormData({ ...formData, availableRooms: e.target.value })} required />
+              </div>
+              <div className="form-group form-full">
+                <label>Description</label>
+                <textarea className="form-textarea" placeholder="Describe the hotel..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+              </div>
+              <div className="form-group form-full">
+                <label>Images</label>
+                <input className="form-input" type="file" multiple accept="image/*"
+                  onChange={(e) => setImages(e.target.files)} />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+              <button type="submit" className="btn-primary" disabled={submitting}>
+                {submitting ? "Saving..." : editingHotel ? "Update Hotel" : "Add Hotel"}
+              </button>
+              <button type="button" className="btn-secondary" onClick={resetForm}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
-      {/* Hotels Table */}
-      {hotels.length === 0 ? (
-        <p style={styles.center}>No hotels yet. Add one above.</p>
+      {loading ? (
+        <p className="state-center">Loading hotels...</p>
+      ) : error ? (
+        <p className="state-center error-text">{error}</p>
+      ) : hotels.length === 0 ? (
+        <p className="state-center">No hotels yet. Add one above.</p>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr style={styles.tableHeader}>
-              <th style={styles.th}>Name</th>
-              <th style={styles.th}>Location</th>
-              <th style={styles.th}>Price/Night</th>
-              <th style={styles.th}>Rooms Available</th>
-              <th style={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {hotels.map((hotel) => (
-              <tr key={hotel._id} style={styles.tableRow}>
-                <td style={styles.td}>{hotel.name}</td>
-                <td style={styles.td}>{hotel.location}</td>
-                <td style={styles.td}>${hotel.pricePerNight}</td>
-                <td style={styles.td}>{hotel.availableRooms}</td>
-                <td style={styles.td}>
-                  <button onClick={() => handleEdit(hotel)} style={styles.editButton}>
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(hotel._id)} style={styles.deleteButton}>
-                    Delete
-                  </button>
-                </td>
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Price / Night</th>
+                <th>Rooms Available</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {hotels.map((hotel) => (
+                <tr key={hotel._id}>
+                  <td>{hotel.name}</td>
+                  <td>{hotel.location}</td>
+                  <td>${hotel.pricePerNight}</td>
+                  <td>
+                    <span className={`badge ${hotel.availableRooms > 0 ? "badge-green" : "badge-red"}`}>
+                      {hotel.availableRooms} rooms
+                    </span>
+                  </td>
+                  <td>
+                    <div className="btn-actions">
+                      <button className="btn-warning" onClick={() => handleEdit(hotel)}>Edit</button>
+                      <button className="btn-danger" onClick={() => handleDelete(hotel._id)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
-  );
+  </div>
+);
 };
 
 const styles = {
