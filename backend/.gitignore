@@ -1,1 +1,5 @@
 node_modules
+
+# Uploaded images
+uploads/*
+!uploads/.gitkeep
