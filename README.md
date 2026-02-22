@@ -37,8 +37,9 @@ npm i
 ## 🛠️ Admin
 
 ```bash
-cd <project-root>
+cd <project-root>/admin
 npm run dev   # Runs 2 sessions in parallel via concurrently
+> Credentials : admin@atlantis.com ; password
 ```
 
 ---
@@ -79,3 +80,4 @@ npm run dev    # Developer mode
 ## ☁️ Cloud
 
 - **Database:** MongoDB Atlas (Cloud Access)
+
