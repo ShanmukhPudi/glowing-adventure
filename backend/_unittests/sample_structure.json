@@ -1,0 +1,161 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "Atlantis Hotel Booking API",
+  "collectionId": "atlantis-001",
+  "dateExported": "2026-02-22",
+  "version": "1.2",
+  "folders": [
+    { "id": "folder-auth", "name": "Auth", "containerId": "" },
+    { "id": "folder-hotels", "name": "Hotels", "containerId": "" },
+    { "id": "folder-bookings", "name": "Bookings", "containerId": "" }
+  ],
+  "requests": [
+    {
+      "id": "req-001",
+      "colId": "atlantis-001",
+      "containerId": "folder-auth",
+      "name": "Signup",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/signup",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@gmail.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "headers": []
+    },
+    {
+      "id": "req-002",
+      "colId": "atlantis-001",
+      "containerId": "folder-auth",
+      "name": "Login",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/login",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john@gmail.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "headers": []
+    },
+    {
+      "id": "req-003",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Create Hotel",
+      "method": "POST",
+      "url": "http://localhost:5000/api/hotels",
+      "body": {
+        "type": "formdata",
+        "form": [
+          { "name": "name", "value": "The Grand Atlantis", "type": "text" },
+          { "name": "location", "value": "Maldives", "type": "text" },
+          { "name": "description", "value": "A luxury beachfront hotel with stunning ocean views.", "type": "text" },
+          { "name": "pricePerNight", "value": "299", "type": "text" },
+          { "name": "availableRooms", "value": "10", "type": "text" },
+          { "name": "images", "value": "", "type": "file" }
+        ]
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    },
+    {
+      "id": "req-004",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Get All Hotels",
+      "method": "GET",
+      "url": "http://localhost:5000/api/hotels",
+      "body": { "type": "none" },
+      "headers": []
+    },
+    {
+      "id": "req-005",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Search Hotels",
+      "method": "GET",
+      "url": "http://localhost:5000/api/hotels?search=maldives",
+      "body": { "type": "none" },
+      "headers": []
+    },
+    {
+      "id": "req-006",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Get Hotel By ID",
+      "method": "GET",
+      "url": "http://localhost:5000/api/hotels/paste_hotel_id_here",
+      "body": { "type": "none" },
+      "headers": []
+    },
+    {
+      "id": "req-007",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Update Hotel",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/hotels/paste_hotel_id_here",
+      "body": {
+        "type": "formdata",
+        "form": [
+          { "name": "name", "value": "The Grand Atlantis Updated", "type": "text" },
+          { "name": "pricePerNight", "value": "349", "type": "text" }
+        ]
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    },
+    {
+      "id": "req-008",
+      "colId": "atlantis-001",
+      "containerId": "folder-hotels",
+      "name": "Delete Hotel",
+      "method": "DELETE",
+      "url": "http://localhost:5000/api/hotels/paste_hotel_id_here",
+      "body": { "type": "none" },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    },
+    {
+      "id": "req-009",
+      "colId": "atlantis-001",
+      "containerId": "folder-bookings",
+      "name": "Create Booking",
+      "method": "POST",
+      "url": "http://localhost:5000/api/bookings",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"hotelId\": \"paste_hotel_id_here\",\n  \"roomsBooked\": 2\n}"
+      },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    },
+    {
+      "id": "req-010",
+      "colId": "atlantis-001",
+      "containerId": "folder-bookings",
+      "name": "Get My Bookings",
+      "method": "GET",
+      "url": "http://localhost:5000/api/bookings/my",
+      "body": { "type": "none" },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    },
+    {
+      "id": "req-011",
+      "colId": "atlantis-001",
+      "containerId": "folder-bookings",
+      "name": "Get All Bookings (Admin)",
+      "method": "GET",
+      "url": "http://localhost:5000/api/bookings",
+      "body": { "type": "none" },
+      "headers": [
+        { "name": "Authorization", "value": "Bearer your_token_here" }
+      ]
+    }
+  ]
+}
