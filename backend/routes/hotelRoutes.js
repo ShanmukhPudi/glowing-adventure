@@ -15,7 +15,7 @@ router.get("/", getAllHotels);
 router.get("/:id", getHotelById);
 
 // Protected routes (admin only)
-router.post("/", protect, upload.array("images, 5"), createHotel);
+router.post("/", protect, upload.array("images", 5), createHotel);
 router.put("/:id", protect, upload.array("images", 5), updateHotel);
 router.delete("/:id", protect, deleteHotel);
 

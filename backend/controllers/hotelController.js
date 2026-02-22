@@ -10,7 +10,7 @@ const createHotel = async(req, res) => {
         // req.files contains the uploaded images from multer
         const images = req.files ? req.files.map((file) => `/uploads/${file.filename}`) : [];
 
-        const hotel = await Hotel.creeate({
+        const hotel = await Hotel.create({
             name,
             location,
             description, pricePerNight,

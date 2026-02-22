@@ -1,0 +1,387 @@
+/* Makes main content fill full width when there is no sidebar (login page) */
+main {
+  flex: 1;
+  width: 100%;
+}
+
+/* ─── Layout Shell ─────────────────────────────── */
+.app-shell {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ─── Sidebar ───────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background-color: #12122a;
+  border-right: 1px solid #1e1e3f;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.sidebar-brand {
+  padding: 1.8rem 1.5rem 1.2rem;
+  border-bottom: 1px solid #1e1e3f;
+}
+
+.sidebar-brand h2 {
+  color: #e94560;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.sidebar-brand p {
+  color: #666;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.5rem;
+  color: #aaa;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+  color: white;
+  background-color: #1a1a3e;
+  border-left-color: #e94560;
+}
+
+.sidebar-link.active {
+  color: white;
+  background-color: #1a1a3e;
+  border-left-color: #e94560;
+}
+
+.sidebar-link span {
+  font-size: 1.1rem;
+}
+
+.sidebar-footer {
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid #1e1e3f;
+}
+
+.sidebar-user {
+  color: #777;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+  word-break: break-all;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 0.65rem;
+  background-color: transparent;
+  border: 1px solid #e94560;
+  color: #e94560;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e94560;
+  color: white;
+}
+
+/* ─── Main Content ───────────────────────────────── */
+.main-content {
+  margin-left: 240px;
+  flex: 1;
+  min-height: 100vh;
+  background-color: #0f0f1a;
+}
+
+.page-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #1e1e3f;
+  background-color: #12122a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header h1 {
+  font-size: 1.3rem;
+  color: white;
+  font-weight: 600;
+}
+
+.page-body {
+  padding: 2rem;
+}
+
+/* ─── Cards ──────────────────────────────────────── */
+.card {
+  background-color: #12122a;
+  border: 1px solid #1e1e3f;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Tables ─────────────────────────────────────── */
+.table-wrapper {
+  background-color: #12122a;
+  border: 1px solid #1e1e3f;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #1a1a3e;
+}
+
+thead th {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+  font-weight: 600;
+}
+
+tbody tr {
+  border-bottom: 1px solid #1e1e3f;
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: #1a1a2e;
+}
+
+tbody td {
+  padding: 1rem 1.2rem;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* ─── Forms ──────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #0f0f1a;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #e94560;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #0f0f1a;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  min-height: 90px;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #e94560;
+}
+
+.form-full {
+  grid-column: 1 / -1;
+}
+
+/* ─── Buttons ────────────────────────────────────── */
+.btn-primary {
+  padding: 0.7rem 1.4rem;
+  background-color: #e94560;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #c73652;
+}
+
+.btn-secondary {
+  padding: 0.7rem 1.4rem;
+  background-color: transparent;
+  color: #aaa;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #aaa;
+  color: white;
+}
+
+.btn-warning {
+  padding: 0.4rem 0.85rem;
+  background-color: #f0a500;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-warning:hover {
+  background-color: #d4920a;
+}
+
+.btn-danger {
+  padding: 0.4rem 0.85rem;
+  background-color: transparent;
+  color: #e94560;
+  border: 1px solid #e94560;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #e94560;
+  color: white;
+}
+
+.btn-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ─── Badges ─────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-green {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.badge-red {
+  background-color: rgba(233, 69, 96, 0.15);
+  color: #e94560;
+}
+
+/* ─── States ─────────────────────────────────────── */
+.state-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.error-text {
+  color: #e94560;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* ─── Login Page ─────────────────────────────────── */
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f0f1a;
+}
+
+.login-card {
+  background-color: #12122a;
+  border: 1px solid #1e1e3f;
+  border-radius: 10px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card h2 {
+  color: #e94560;
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
+  text-align: center;
+}
+
+.login-card p {
+  color: #666;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

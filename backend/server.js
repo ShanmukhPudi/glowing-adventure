@@ -24,6 +24,13 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/bookings", bookingRoutes);
+// Multer error handler — must be after all routes
+app.use((err, req, res, next) => {
+  if (err.name === "MulterError") {
+    return res.status(400).json({ message: `Upload error: ${err.message}` });
+  }
+  res.status(500).json({ message: err.message });
+});
 
 //Basic test route
 app.get('/',(req,res) => {
