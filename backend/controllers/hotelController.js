@@ -10,7 +10,7 @@ const createHotel = async(req, res) => {
         // req.files contains the uploaded images from multer
         const images = req.files ? req.files.map((file) => `/uploads/${file.filename}`) : [];
 
-        const hetel = await Hotel.creeate({
+        const hotel = await Hotel.creeate({
             name,
             location,
             description, pricePerNight,
@@ -18,7 +18,7 @@ const createHotel = async(req, res) => {
             images,
         });
 
-        res.status(201).json(hetel);
+        res.status(201).json(hotel);
     } catch (error){
         res.status(500).json({message: error.message});
     }
@@ -83,8 +83,8 @@ const updateHotel = async (req, res) => {
         hotel.availableRooms = availableRooms || hotel.availableRooms;
         hotel.images = images;
 
-        const updateHotel = await hotel.save();
-        res.status(200).json(updateHotel);
+        const updatedHotel = await hotel.save();
+        res.status(200).json(updatedHotel);
     } catch (error){
         res.status(500).json({ message: error.message});
     }
@@ -107,7 +107,7 @@ const deleteHotel = async (req, res) => {
     }
 };
 
-module.expoets = {
+module.exports = {
     createHotel,
     getAllHotels,
     getHotelById,
