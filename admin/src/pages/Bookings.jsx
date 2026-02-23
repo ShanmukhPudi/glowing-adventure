@@ -70,9 +70,15 @@ const Bookings = () => {
                     <span className="badge badge-green">{booking.roomsBooked}</span>
                   </td>
                   <td>
-                    {new Date(booking.createdAt).toLocaleDateString("en-IN", {
-                      year: "numeric", month: "short", day: "numeric",
-                    })}
+                    {booking.createdAt
+                      ? new Date(booking.createdAt).toLocaleDateString("en-IN",{
+                        year: "numeric",
+                        month: "short",
+                        Day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A"}
                   </td>
                 </tr>
               ))}

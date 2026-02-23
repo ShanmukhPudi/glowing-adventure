@@ -19,7 +19,10 @@ const bookingSchema = new mongoose.Schema(
             required: [true, "Number of rooms is required"],
             min: [1, "Please select a room to book"],
         },
-    },
+
+    },      {
+            timestamps: true,
+        },
 );
 
 const Booking = mongoose.model("Booking", bookingSchema);
