@@ -8,7 +8,7 @@ const bookingSchema = new mongoose.Schema(
             required: [true, "User is required"],
         },
 
-        hetel: {
+        hotel: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Hotel",
             required: [true, "Hotel is required"],
