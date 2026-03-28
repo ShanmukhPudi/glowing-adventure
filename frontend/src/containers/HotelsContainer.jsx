@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import API from "../api/axios";
 import HotelCard from "../components/HotelCard";
 import SearchBar from "../components/SearchBar";
@@ -9,6 +9,7 @@ const HotelsContainer = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const debounceTimer = useRef(null);
 
   useEffect(() => {
     fetchHotels();
@@ -27,8 +28,16 @@ const HotelsContainer = () => {
     }
   };
 
-  const handleSearch = () => {
-    fetchHotels(search.trim());
+  const handleSearch = (value) => {
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    
+    // Set new debounced search
+    debounceTimer.current = setTimeout(() => {
+      fetchHotels(value.trim());
+    }, 300);
   };
 
   const handleClear = () => {
@@ -42,7 +51,14 @@ const HotelsContainer = () => {
       <section className="hero">
         <h1>Find Your Perfect Stay</h1>
         <p>Explore our handpicked collection of premium hotels</p>
-        <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        <SearchBar 
+          value={search} 
+          onChange={(value) => {
+            setSearch(value);
+            handleSearch(value);
+          }} 
+          onSearch={() => handleSearch(search)} 
+        />
       </section>
 
       {/* Hotels grid */}

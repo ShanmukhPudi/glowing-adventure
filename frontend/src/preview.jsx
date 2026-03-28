@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate, NavLink, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route, Navigate, NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
 
 // ─── Dummy Data ───────────────────────────────────
 const dummyHotels = [
@@ -69,23 +69,34 @@ const dummyBookings = [
 ];
 
 // ─── Navbar ───────────────────────────────────────
-const Navbar = () => (
+const Navbar = ({ isLoggedIn, user, onLogout }) => (
   <header className="navbar">
     <div className="navbar-inner">
       <NavLink to="/" className="navbar-brand">
         Atlantis <span>Hotels</span>
       </NavLink>
       <nav className="navbar-links">
-        <NavLink
-          to="/my-bookings"
-          className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-        >
-          My Bookings
-        </NavLink>
-        <NavLink to="/login" className="nav-link">Login</NavLink>
-        <NavLink to="/signup">
-          <button className="nav-btn nav-btn-solid">Sign Up</button>
-        </NavLink>
+        {isLoggedIn ? (
+          <>
+            <NavLink
+              to="/my-bookings"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            >
+              My Bookings
+            </NavLink>
+            <span style={{ color: "#666", fontSize: "0.95rem", fontWeight: "500" }}>
+              Hello, {user?.name || user?.email}
+            </span>
+            <button className="nav-btn nav-btn-outline" onClick={onLogout} style={{ cursor: "pointer" }}>Logout</button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className="nav-link">Login</NavLink>
+            <NavLink to="/signup">
+              <button className="nav-btn nav-btn-solid">Sign Up</button>
+            </NavLink>
+          </>
+        )}
       </nav>
     </div>
   </header>
@@ -108,6 +119,8 @@ const SearchBar = ({ value, onChange, onSearch }) => (
 // ─── Hotel Card ───────────────────────────────────
 const HotelCard = ({ hotel }) => {
   const navigate = useNavigate();
+  const isLowRooms = hotel.availableRooms > 0 && hotel.availableRooms <= 3;
+  
   return (
     <div className="hotel-card" onClick={() => navigate(`/hotels/${hotel._id}`)}>
       <div style={{
@@ -125,7 +138,10 @@ const HotelCard = ({ hotel }) => {
           <p className="hotel-card-price">
             ${hotel.pricePerNight} <span>/ night</span>
           </p>
-          <span className={`hotel-card-rooms ${hotel.availableRooms > 0 ? "rooms-available" : "rooms-full"}`}>
+          <span 
+            className={`hotel-card-rooms ${hotel.availableRooms > 0 ? "rooms-available" : "rooms-full"}`}
+            style={isLowRooms ? { color: "#ff9800", fontWeight: "600", backgroundColor: "#fff3e0", padding: "0.25rem 0.5rem", borderRadius: "4px" } : {}}
+          >
             {hotel.availableRooms > 0 ? `${hotel.availableRooms} rooms left` : "Fully Booked"}
           </span>
         </div>
@@ -136,25 +152,64 @@ const HotelCard = ({ hotel }) => {
 
 // ─── Home Page ────────────────────────────────────
 const HomePage = () => {
+  const location = useLocation();
   const [search, setSearch] = useState("");
-  const [hotels, setHotels] = useState(dummyHotels);
+  const [hotels, setHotels] = useState([]);
+  const debounceTimer = useRef(null);
 
-  const handleSearch = () => {
-    const query = search.trim().toLowerCase();
-    if (!query) { setHotels(dummyHotels); return; }
-    setHotels(dummyHotels.filter(
-      (h) => h.name.toLowerCase().includes(query) || h.location.toLowerCase().includes(query)
+  useEffect(() => {
+    // Refresh hotels from sessionStorage whenever we navigate back to this page
+    const savedHotels = sessionStorage.getItem("hotels");
+    if (savedHotels) {
+      setHotels(JSON.parse(savedHotels));
+    } else {
+      setHotels(dummyHotels);
+      sessionStorage.setItem("hotels", JSON.stringify(dummyHotels));
+    }
+    setSearch(""); // Clear search when navigating back
+  }, [location]);
+
+  const performSearch = (query) => {
+    const trimmedQuery = query.trim().toLowerCase();
+    if (!trimmedQuery) { 
+      const savedHotels = JSON.parse(sessionStorage.getItem("hotels") || JSON.stringify(dummyHotels));
+      setHotels(savedHotels); 
+      return; 
+    }
+    const savedHotels = JSON.parse(sessionStorage.getItem("hotels") || JSON.stringify(dummyHotels));
+    setHotels(savedHotels.filter(
+      (h) => h.name.toLowerCase().includes(trimmedQuery) || h.location.toLowerCase().includes(trimmedQuery)
     ));
   };
 
-  const handleClear = () => { setSearch(""); setHotels(dummyHotels); };
+  const handleSearch = (value) => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      performSearch(value);
+    }, 300);
+  };
+
+  const handleClear = () => { 
+    setSearch(""); 
+    const savedHotels = JSON.parse(sessionStorage.getItem("hotels") || JSON.stringify(dummyHotels));
+    setHotels(savedHotels); 
+  };
 
   return (
     <>
       <section className="hero">
         <h1>Find Your Perfect Stay</h1>
         <p>Explore our handpicked collection of premium hotels</p>
-        <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        <SearchBar 
+          value={search} 
+          onChange={(value) => {
+            setSearch(value);
+            handleSearch(value);
+          }} 
+          onSearch={() => performSearch(search)} 
+        />
       </section>
       <div className="container">
         <div className="page-body">
@@ -187,11 +242,61 @@ const HomePage = () => {
 const HotelDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const hotel = dummyHotels.find((h) => h._id === id);
+  const [hotel, setHotel] = useState(null);
   const [rooms, setRooms] = useState(1);
   const [booked, setBooked] = useState(false);
 
+  useEffect(() => {
+    // Get hotel from sessionStorage if available, otherwise from dummy data
+    const savedHotels = JSON.parse(sessionStorage.getItem("hotels") || JSON.stringify(dummyHotels));
+    const foundHotel = savedHotels.find((h) => h._id === id);
+    setHotel(foundHotel);
+  }, [id]);
+
   if (!hotel) return <div className="state-center"><p className="error-text">Hotel not found.</p></div>;
+
+  const handleBooking = () => {
+    // Check if user is logged in
+    const userStr = sessionStorage.getItem("atlantisUser");
+    if (!userStr) {
+      navigate("/login");
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+    
+    // Get existing bookings for this user
+    const bookingsKey = `bookings_${user.email}`;
+    const existingBookings = JSON.parse(sessionStorage.getItem(bookingsKey) || "[]");
+    
+    // Update hotel availability
+    const savedHotels = JSON.parse(sessionStorage.getItem("hotels") || JSON.stringify(dummyHotels));
+    const updatedHotels = savedHotels.map((h) => 
+      h._id === hotel._id 
+        ? { ...h, availableRooms: Math.max(0, h.availableRooms - rooms) }
+        : h
+    );
+    
+    // Save updated hotels to sessionStorage
+    sessionStorage.setItem("hotels", JSON.stringify(updatedHotels));
+    
+    // Create new booking
+    const newBooking = {
+      _id: `${user.email}-b${Date.now()}`,
+      hotel: { name: hotel.name, location: hotel.location, pricePerNight: hotel.pricePerNight },
+      roomsBooked: rooms,
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Add to user's bookings
+    existingBookings.push(newBooking);
+    sessionStorage.setItem(bookingsKey, JSON.stringify(existingBookings));
+    
+    // Update local hotel state
+    const updatedHotel = updatedHotels.find((h) => h._id === id);
+    setHotel(updatedHotel);
+    setBooked(true);
+  };
 
   return (
     <div className="container">
@@ -239,9 +344,9 @@ const HotelDetailPage = () => {
                     onChange={(e) => setRooms(Number(e.target.value))} />
                   <p className="booking-rooms-info">Max {hotel.availableRooms} room{hotel.availableRooms !== 1 ? "s" : ""} available</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => setBooked(true)}>Book Now (Demo)</button>
+                <button className="btn btn-primary" onClick={handleBooking}>Book Now</button>
                 <p style={{ fontSize: "0.78rem", color: "#aaa", textAlign: "center", marginTop: "0.75rem" }}>
-                  This is a UI demo — no real booking is made
+                  This is a UI demo — bookings are saved to your account
                 </p>
               </>
             )}
@@ -253,40 +358,96 @@ const HotelDetailPage = () => {
 };
 
 // ─── My Bookings Page ─────────────────────────────
-const MyBookingsPage = () => (
-  <div className="container">
-    <div className="page-body">
-      <div style={{ marginBottom: "1.5rem" }}>
-        <p className="section-title">My Bookings</p>
-        <p className="section-subtitle">{dummyBookings.length} bookings found</p>
-      </div>
-      <div className="bookings-list">
-        {dummyBookings.map((booking) => (
-          <div key={booking._id} className="booking-card">
-            <div>
-              <p className="booking-card-hotel">{booking.hotel.name}</p>
-              <p className="booking-card-location">📍 {booking.hotel.location}</p>
-              <div className="booking-card-meta">
-                <span>💰 ${booking.hotel.pricePerNight} / night</span>
-                <span>📅 {new Date(booking.createdAt).toLocaleDateString("en-IN", {
-                  year: "numeric", month: "short", day: "numeric"
-                })}</span>
-              </div>
-            </div>
-            <div className="booking-card-right">
-              <p className="booking-card-rooms">{booking.roomsBooked}</p>
-              <p className="booking-card-rooms-label">{booking.roomsBooked === 1 ? "room" : "rooms"} booked</p>
-            </div>
+const MyBookingsPage = ({ user }) => {
+  const navigate = useNavigate();
+  
+  if (!user) {
+    return (
+      <div className="container">
+        <div className="page-body">
+          <div className="state-center">
+            <p style={{ fontSize: "2rem" }}>🔒</p>
+            <p>Please log in to view your bookings.</p>
+            <button className="btn btn-primary" onClick={() => navigate("/login")} style={{ marginTop: "1rem" }}>
+              Go to Login
+            </button>
           </div>
-        ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Load user-specific bookings from sessionStorage
+  const bookingsKey = `bookings_${user.email}`;
+  const userBookings = JSON.parse(sessionStorage.getItem(bookingsKey) || "[]");
+
+  return (
+    <div className="container">
+      <div className="page-body">
+        <div style={{ marginBottom: "1.5rem" }}>
+          <p className="section-title">My Bookings</p>
+          <p className="section-subtitle">{userBookings.length} booking{userBookings.length !== 1 ? "s" : ""} found</p>
+        </div>
+        {userBookings.length === 0 ? (
+          <div className="state-center">
+            <p style={{ fontSize: "2rem" }}>🎫</p>
+            <p>No bookings yet. Start exploring hotels!</p>
+            <button className="btn btn-primary" onClick={() => navigate("/")} style={{ marginTop: "1rem" }}>
+              Browse Hotels
+            </button>
+          </div>
+        ) : (
+          <div className="bookings-list">
+            {userBookings.map((booking) => (
+              <div key={booking._id} className="booking-card">
+                <div>
+                  <p className="booking-card-hotel">{booking.hotel.name}</p>
+                  <p className="booking-card-location">📍 {booking.hotel.location}</p>
+                  <div className="booking-card-meta">
+                    <span>💰 ${booking.hotel.pricePerNight} / night</span>
+                    <span>📅 {new Date(booking.createdAt).toLocaleDateString("en-IN", {
+                      year: "numeric", month: "short", day: "numeric"
+                    })}</span>
+                  </div>
+                </div>
+                <div className="booking-card-right">
+                  <p className="booking-card-rooms">{booking.roomsBooked}</p>
+                  <p className="booking-card-rooms-label">{booking.roomsBooked === 1 ? "room" : "rooms"} booked</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── Auth Pages ───────────────────────────────────
-const LoginPage = () => {
+const LoginPage = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = () => {
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email");
+      return;
+    }
+    
+    // Save user to sessionStorage
+    const userData = { email, password };
+    sessionStorage.setItem("atlantisUser", JSON.stringify(userData));
+    
+    onLoginSuccess(userData);
+    navigate("/");
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -295,14 +456,33 @@ const LoginPage = () => {
         <div className="auth-form">
           <div className="form-group">
             <label>Email</label>
-            <input type="email" className="form-input" placeholder="you@example.com" />
+            <input 
+              type="email" 
+              className="form-input" 
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" className="form-input" placeholder="••••••••" />
+            <input 
+              type="password" 
+              className="form-input" 
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+            />
           </div>
-          <button className="btn btn-primary" onClick={() => navigate("/")}>
-            Sign In (Demo)
+          {error && <p className="error-text" style={{ marginBottom: "1rem" }}>{error}</p>}
+          <button className="btn btn-primary" onClick={handleLogin}>
+            Sign In
           </button>
         </div>
         <p className="auth-footer">
@@ -313,8 +493,35 @@ const LoginPage = () => {
   );
 };
 
-const SignupPage = () => {
+const SignupPage = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSignup = () => {
+    if (!name || !email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    
+    // Save user to sessionStorage
+    const userData = { name, email, password };
+    sessionStorage.setItem("atlantisUser", JSON.stringify(userData));
+    
+    onLoginSuccess(userData);
+    navigate("/");
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -323,18 +530,46 @@ const SignupPage = () => {
         <div className="auth-form">
           <div className="form-group">
             <label>Full Name</label>
-            <input type="text" className="form-input" placeholder="John Doe" />
+            <input 
+              type="text" 
+              className="form-input" 
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setError("");
+              }}
+            />
           </div>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" className="form-input" placeholder="you@example.com" />
+            <input 
+              type="email" 
+              className="form-input" 
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" className="form-input" placeholder="Min. 6 characters" />
+            <input 
+              type="password" 
+              className="form-input" 
+              placeholder="Min. 6 characters"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+            />
           </div>
-          <button className="btn btn-primary" onClick={() => navigate("/")}>
-            Create Account (Demo)
+          {error && <p className="error-text" style={{ marginBottom: "1rem" }}>{error}</p>}
+          <button className="btn btn-primary" onClick={handleSignup}>
+            Create Account
           </button>
         </div>
         <p className="auth-footer">
@@ -346,20 +581,45 @@ const SignupPage = () => {
 };
 
 // ─── App Root ─────────────────────────────────────
-const Demo = () => (
-  <BrowserRouter basename="/glowing-adventure">
-    <div className="page-wrapper">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/hotels/:id" element={<HotelDetailPage />} />
-        <Route path="/my-bookings" element={<MyBookingsPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </div>
-  </BrowserRouter>
-);
+const Demo = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Check if user is already logged in via sessionStorage
+    const savedUser = sessionStorage.getItem("atlantisUser");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("atlantisUser");
+    setUser(null);
+  };
+
+  return (
+    <BrowserRouter basename="/glowing-adventure">
+      <div className="page-wrapper">
+        <Navbar 
+          isLoggedIn={!!user} 
+          user={user} 
+          onLogout={handleLogout}
+        />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/hotels/:id" element={<HotelDetailPage />} />
+          <Route path="/my-bookings" element={<MyBookingsPage user={user} />} />
+          <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="/signup" element={<SignupPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+};
 
 export default Demo;

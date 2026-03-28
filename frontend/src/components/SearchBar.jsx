@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 //  receives the current search value and an onChange handler from its container
-const SearchBar = ({ value, onchange, onSearch}) => {
+const SearchBar = ({ value, onChange, onSearch}) => {
     const handleKeyDown = (e) => {
         if (e.key === "Enter") onSearch();
     };

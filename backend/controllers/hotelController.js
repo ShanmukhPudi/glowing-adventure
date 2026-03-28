@@ -33,7 +33,7 @@ const getAllHotels = async (req, res) => {
         // if a search query exists, filter by name or location
         const filter = search
         ?{
-            $or: [{name: { $regex: search, $option: "i"}}, {location: { $regex: search, $options:"i"}},]
+            $or: [{name: { $regex: search, $options: "i"}}, {location: { $regex: search, $options:"i"}},]
         }
         :{};
 
